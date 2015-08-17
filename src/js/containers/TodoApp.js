@@ -14,6 +14,8 @@ class TodoApp extends Component {
       <div>
         <Header addTodo={actions.addTodo} />
         <MainSection todos={todos} actions={actions} />
+        <h3>Children</h3>
+        {this.props.children}
       </div>
     );
   }
