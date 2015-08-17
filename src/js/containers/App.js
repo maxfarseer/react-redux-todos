@@ -1,27 +1,26 @@
 import React, { Component } from 'react';
 import TodoApp from './TodoApp';
-import { createRedux, createDispatcher, composeStores } from 'redux';
-import { Provider } from 'redux/react';
-import * as stores from '../stores';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import rootReducer from '../reducers';
 
-function loggerMiddleware (next) {
-  return action => {
-    console.log(action)
-    next(action)
-  }
-}
+const logger = store => next => action => {
+  console.log('dispatching', action);
+  let result = next(action);
+  console.log('next state', store.getState());
+  return result;
+};
 
-const dispatcher = createDispatcher(
-  composeStores(stores),
-  getState => [ loggerMiddleware ]
-)
+let createStoreWithMiddleware = applyMiddleware(logger)(createStore);
 
-const redux = createRedux(dispatcher)
+
+
+const store = createStoreWithMiddleware(rootReducer);
 
 export default class App extends Component {
   render() {
     return (
-      <Provider redux={redux}>
+      <Provider store={store}>
         {() => <TodoApp />}
       </Provider>
     );
